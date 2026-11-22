@@ -23,6 +23,7 @@ enum CompareSide: Hashable {
 
 struct RecipeDetailView: View {
     @Bindable var recipe: Recipe
+    @Environment(\.openWindow) private var openWindow
     @Binding var showCommit: Bool
     @Binding var showCard: Bool
     let duplicate: (RecipeContent, String) -> Void
@@ -92,6 +93,8 @@ struct RecipeDetailView: View {
                     Label("Favourite", systemImage: recipe.isFavorite ? "star.fill" : "star")
                 }
                 .help("Favourite")
+                Button { openWindow(id: "cook", value: recipe.id) } label: { Label("Cook", systemImage: "flame") }
+                    .help("Start Cook Mode: full-screen steps with timers (⌘K)")
                 Button { showCard = true } label: { Label("Recipe Card", systemImage: "printer") }
                     .help("Print or export a recipe card (⌘P)")
                 Button { showCommit = true } label: { Label("Save Version", systemImage: "checkmark.circle") }

@@ -1,11 +1,11 @@
 # RecipeCanvas Roadmap
 
-The MVP (recipe editor + version history) ships today. Everything below is ordered by how much it raises
-the value of a **$19.99 lifetime** purchase compared with how hard it is to build.
+RecipeCanvas is free and open source. Everything below is ordered by how much it helps cooks compared with
+how hard it is to build. Contributions are welcome. Open an issue to claim an item.
 
-## 1.1: Make cooking easier (free updates; these drive reviews)
+## 1.1: Make cooking easier
 
-1. **Cook Mode.** Full-screen, large-type step view that keeps the screen awake. Tap through steps, with timers
+1. ✅ **Cook Mode** (shipped). Full-screen, large-type step view that keeps the screen awake. Tap through steps, with timers
    detected from text ("bake 12 minutes" turns into a tap-to-start timer). After cooking it asks "How did it go?",
    then saves a rating and tasting note as a new version or note.
 2. **Scaling and unit conversion.** Scale servings ×½/×2/custom, switch metric ⇄ US, and convert volume to weight
@@ -27,7 +27,7 @@ the value of a **$19.99 lifetime** purchase compared with how hard it is to buil
    passionate experimenters.
 9. **Cost and nutrition per version.** Rough cost per serving and macros, so "v4 is 30% cheaper" is visible.
 
-## 2.0: Family Recipe Library (paid add-on or a one-time "Family" tier)
+## 2.0: Family Recipe Library
 
 10. **Family recipe library with iCloud sharing.** A shared library via CloudKit sharing. Each member keeps
     private drafts and shares chosen recipes. Attribution: "Grandma's original, Mum's v3".
@@ -37,10 +37,7 @@ the value of a **$19.99 lifetime** purchase compared with how hard it is to buil
     stories and photos. Gift-season marketing writes itself. Optionally offer print-on-demand.
 13. **Comments and "I made this".** Family members add a tasting note or photo to a shared recipe.
 
-*Pricing idea:* keep $19.99 Personal Lifetime, and add **$39.99 Family Lifetime** (up to 6 people) or a
-$14.99 Family upgrade for existing owners. Lifetime buyers stay happy, and the upgrade creates a second revenue moment.
-
-## 2.x: Mobile companion (iPhone/iPad, included with lifetime)
+## 2.x: Mobile companion (iPhone/iPad)
 
 14. **Kitchen companion.** Synced library via CloudKit, Cook Mode on an iPad propped in the kitchen,
     and hands-free step advance by voice ("next").
@@ -58,7 +55,7 @@ $14.99 Family upgrade for existing owners. Lifetime buyers stay happy, and the u
 - More card templates (vintage, minimal, two-column) and custom fonts and colours
 - Allergen flags (contains nuts/dairy/gluten), checked automatically against substitutions
 
-## Suggested positioning
+## Tagline
 
-> **"Git for your grandmother's cookies."** The only recipe app that remembers every version you've cooked,
-> what you swapped, and which one tasted best. Pay once and keep it forever.
+> **"Git for your grandmother's cookies."** The free, open-source recipe app that remembers every version
+> you've cooked, what you swapped, and which one tasted best.

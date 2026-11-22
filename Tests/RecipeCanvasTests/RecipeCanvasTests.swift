@@ -81,3 +81,23 @@ final class VersioningTests: XCTestCase {
         XCTAssertEqual(c.title, "Old"); XCTAssertEqual(c.servings, 4); XCTAssertTrue(c.ingredients.isEmpty)
     }
 }
+
+final class TimerDetectorTests: XCTestCase {
+    func testMinutesAndRanges() {
+        XCTAssertEqual(TimerDetector.detect(in: "Bake 10–12 minutes until golden").map(\.seconds), [600])
+        XCTAssertEqual(TimerDetector.detect(in: "Simmer 20 min, then rest 5 minutes").map(\.seconds), [1200, 300])
+    }
+    func testHoursAndSpelled() {
+        XCTAssertEqual(TimerDetector.detect(in: "Chill at least 2 hours").map(\.seconds), [7200])
+        XCTAssertEqual(TimerDetector.detect(in: "Proof for an hour").map(\.seconds), [3600])
+        XCTAssertEqual(TimerDetector.detect(in: "Roast 1.5 hrs").map(\.seconds), [5400])
+    }
+    func testIgnoresNonDurations() {
+        XCTAssertTrue(TimerDetector.detect(in: "Heat oven to 190°C and line 2 trays").isEmpty)
+        XCTAssertTrue(TimerDetector.detect(in: "Add 200 g sugar").isEmpty)
+    }
+    func testFormat() {
+        XCTAssertEqual(TimerDetector.format(65), "1:05")
+        XCTAssertEqual(TimerDetector.format(3725), "1:02:05")
+    }
+}

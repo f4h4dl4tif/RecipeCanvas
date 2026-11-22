@@ -4,7 +4,6 @@ import SwiftData
 @main
 struct RecipeCanvasApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var license = LicenseManager()
 
     /// Own folder in Application Support, so the library never shares SwiftData's generic `default.store`.
     static let container: ModelContainer = {
@@ -27,18 +26,19 @@ struct RecipeCanvasApp: App {
     var body: some Scene {
         WindowGroup("RecipeCanvas") {
             ContentView()
-                .environmentObject(license)
                 .frame(minWidth: 1040, minHeight: 660)
                 .tint(Theme.accent)
         }
         .modelContainer(Self.container)
         .commands { RecipeCommands() }
 
-        Settings {
-            LicenseView(showsClose: false)
-                .environmentObject(license)
+        WindowGroup("Cook Mode", id: "cook", for: UUID.self) { $recipeID in
+            CookModeWindow(recipeID: recipeID)
                 .tint(Theme.accent)
         }
+        .modelContainer(Self.container)
+        .defaultSize(width: 1200, height: 800)
+        .commandsRemoved()
     }
 }
 
@@ -66,7 +66,7 @@ struct RecipeActions {
     var newRecipe: () -> Void
     var saveVersion: (() -> Void)?
     var printCard: (() -> Void)?
-    var showLicense: () -> Void
+    var cook: (() -> Void)?
 }
 
 struct RecipeActionsKey: FocusedValueKey { typealias Value = RecipeActions }
@@ -97,9 +97,10 @@ struct RecipeCommands: Commands {
                 .keyboardShortcut("p")
                 .disabled(actions?.printCard == nil)
         }
-        CommandGroup(after: .appInfo) {
-            Button("Unlock Lifetime Licence…") { actions?.showLicense() }
-                .disabled(actions == nil)
+        CommandMenu("Recipe") {
+            Button("Start Cook Mode") { actions?.cook?() }
+                .keyboardShortcut("k")
+                .disabled(actions?.cook == nil)
         }
     }
 }

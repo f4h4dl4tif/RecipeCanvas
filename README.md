@@ -3,7 +3,7 @@
 A visual recipe and cooking-experiment studio for macOS. Build personal recipes, record ingredient
 substitutions, compare cooking versions, keep preparation notes, and print recipe cards.
 
-**Customers:** home cooks and food enthusiasts · **Price:** $19.99 one-time lifetime licence
+**For:** home cooks and food enthusiasts · **Free and open source** under the [MIT License](LICENSE). No accounts, no tracking, no paid tier: every feature is included.
 
 ## Build & run
 
@@ -12,7 +12,7 @@ Requires macOS 14+ and Xcode (the command-line tools alone can't build SwiftData
 ```bash
 ./build.sh            # → build/RecipeCanvas.app (ad-hoc signed)
 open build/RecipeCanvas.app
-swift test            # parser, diff and versioning tests
+swift test            # parser, diff, versioning and timer tests
 ```
 
 `build.sh` sets `DEVELOPER_DIR` to `/Applications/Xcode.app` for you. Data lives in
@@ -28,16 +28,14 @@ swift test            # parser, diff and versioning tests
 | **Compare** | Any two versions (or a version vs. the draft): changed details, ingredients (+ / − / adjusted), steps side by side, substitutions. |
 | **Substitutions** | Original → replacement, ratio, reason and outcome. Saved with each version, and gathered across recipes in the **Substitution Log**. |
 | **Notes** | Belong to the recipe, not a version, typed as Prep, Timing, Technique, Tasting or General. Pinned notes print on cards. |
+| **Cook Mode** | ⌘K or the Cook button opens a full-screen window. It shows large steps and an ingredient checklist, and keeps the screen awake. It offers timers for times found in the steps ("bake 10–12 minutes" → 10:00). Timers keep running in a tray and chime when done. At the end you rate the cook and add a tasting note; this rates the current version, or saves an unsaved draft as a new version. |
 | **Recipe cards** | 4×6, 5×7, Half Letter, Letter, A4; Classic or Modern style; type auto-shrinks to fit; Print or save as PDF (⌘P). |
 
 Quick add parses lines like `1 1/2 cups flour, sifted`; **Paste List** adds a whole clipboard ingredient list.
 
-## Monetisation
+## Contributing
 
-`License.swift` uses the same Gumroad licence-key flow as the other apps: free tier = 5 of your own recipes
-(samples don't count), lifetime key unlocks everything. Before release, set `LicenseConfig.productID` and
-`purchaseURL`. Until then the dev key `RECIPECANVAS-DEV-UNLOCK` works. For the Mac App Store, replace
-`activate()` with a StoreKit 2 non-consumable; the rest of the app only reads `isUnlocked`.
+Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and pick something from the [roadmap](ROADMAP.md).
 
 ## Source map
 
@@ -47,7 +45,8 @@ Quick add parses lines like `1 1/2 cups flour, sifted`; **Paste List** adds a wh
 - `RecipeDetailView.swift`: tabs, status bar, Save Version sheet
 - `EditorViews.swift`: recipe editor, substitutions, notes
 - `HistoryViews.swift`: version timeline, read-only preview, Compare
+- `CookMode.swift`: Cook Mode window, timers, finish screen
+- `TimerDetector.swift`: finds durations in step text
 - `RecipeCard.swift`: card layout, PDF rendering, print sheet
-- `License.swift`: lifetime licence and paywall
 
 See [ROADMAP.md](ROADMAP.md) for the expansion plan.

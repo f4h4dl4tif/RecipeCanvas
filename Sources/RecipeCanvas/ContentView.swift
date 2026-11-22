@@ -7,14 +7,13 @@ enum SidebarItem: Hashable {
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var license: LicenseManager
+    @Environment(\.openWindow) private var openWindow
     @Query(sort: \Recipe.updatedAt, order: .reverse) private var recipes: [Recipe]
     @AppStorage("didSeedSamples") private var didSeedSamples = false
 
     @State private var sidebar: SidebarItem? = .all
     @State private var selectedID: UUID?
     @State private var search = ""
-    @State private var showPaywall = false
     @State private var showCommit = false
     @State private var showCard = false
     @State private var pendingDelete: Recipe?
@@ -66,8 +65,7 @@ struct ContentView: View {
             newRecipe: newRecipe,
             saveVersion: selected == nil ? nil : { showCommit = true },
             printCard: selected == nil ? nil : { showCard = true },
-            showLicense: { showPaywall = true }))
-        .sheet(isPresented: $showPaywall) { LicenseView().environmentObject(license) }
+            cook: selected.map { r in { openWindow(id: "cook", value: r.id) } }))
         .confirmationDialog("Delete “\(pendingDelete?.title ?? "")”?", isPresented: Binding(
             get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }), titleVisibility: .visible) {
             Button("Delete Recipe and All Versions", role: .destructive) {
@@ -100,22 +98,6 @@ struct ContentView: View {
                         Label(c, systemImage: "folder").tag(SidebarItem.category(c))
                     }
                 }
-            }
-        }
-        .safeAreaInset(edge: .bottom) {
-            if !license.isUnlocked {
-                Button { showPaywall = true } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Free plan").font(.caption.bold())
-                        Text("\(ownRecipeCount)/\(LicenseConfig.freeRecipeLimit) recipes · Unlock for \(LicenseConfig.price)")
-                            .font(.caption2).foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(Theme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
-                }
-                .buttonStyle(.plain)
-                .padding(10)
             }
         }
     }
@@ -161,8 +143,6 @@ struct ContentView: View {
 
     // MARK: Actions
 
-    private var ownRecipeCount: Int { recipes.filter { !$0.isSample }.count }
-
     private func newRecipe() {
         var content = RecipeContent()
         content.title = "Untitled Recipe"
@@ -178,7 +158,6 @@ struct ContentView: View {
     }
 
     private func createRecipe(_ content: RecipeContent, category: String) {
-        guard license.canCreateRecipe(ownRecipeCount: ownRecipeCount) else { showPaywall = true; return }
         let recipe = Recipe(content: content, category: category)
         if sidebar == .favorites { recipe.isFavorite = true }
         context.insert(recipe)
