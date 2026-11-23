@@ -33,6 +33,7 @@ struct RecipeDetailView: View {
     @State private var compareLeft: CompareSide = .draft
     @State private var compareRight: CompareSide = .draft
     @State private var focusSubstitution: UUID?
+    @AppStorage(GlassTheme.key) private var glass = false
 
     init(recipe: Recipe, showCommit: Binding<Bool>, showCard: Binding<Bool>, duplicate: @escaping (RecipeContent, String) -> Void) {
         self.recipe = recipe
@@ -129,7 +130,7 @@ struct RecipeDetailView: View {
             Text("\(recipe.versions.count) version\(recipe.versions.count == 1 ? "" : "s") · \(recipe.notes.count) note\(recipe.notes.count == 1 ? "" : "s")")
                 .foregroundStyle(.secondary)
             if isModified {
-                Button("Save Version…") { showCommit = true }.controlSize(.small)
+                Button("Save Version…") { showCommit = true }.controlSize(.small).glassButton(glass)
             }
         }
         .font(.callout)

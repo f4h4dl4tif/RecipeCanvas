@@ -111,6 +111,7 @@ struct CookModeView: View {
     @State private var showIngredients = true
     @State private var awake: NSObjectProtocol?
     @State private var window: NSWindow?
+    @AppStorage(GlassTheme.key) private var glass = false
 
     // Finish screen
     @State private var rating = 0
@@ -154,8 +155,14 @@ struct CookModeView: View {
             awake = ProcessInfo.processInfo.beginActivity(
                 options: [.idleDisplaySleepDisabled, .userInitiated], reason: "Cook Mode keeps the screen on")
             rating = recipe.latestVersion?.rating ?? 0
+            #if DEBUG
+            if GlassSnapshot.isActive { timers.start(DetectedTimer(label: "12 minutes", seconds: 720), step: 1) }
+            #endif
         }
         .onChange(of: window) { _, w in
+            #if DEBUG
+            if GlassSnapshot.isActive { return }
+            #endif
             if let w, !w.styleMask.contains(.fullScreen) { w.toggleFullScreen(nil) }
         }
         .onDisappear {
@@ -171,6 +178,7 @@ struct CookModeView: View {
             Button { showIngredients.toggle() } label: {
                 Label("Ingredients", systemImage: "sidebar.left")
             }
+            .glassButton(glass)
             .help("Show or hide ingredients")
             VStack(alignment: .leading, spacing: 1) {
                 Text(content.title).font(.title3.bold()).lineLimit(1)
@@ -188,13 +196,17 @@ struct CookModeView: View {
                     }
                 }
                 .animation(.easeInOut(duration: 0.2), value: stepIndex)
+                .padding(.horizontal, glass ? 12 : 0).padding(.vertical, glass ? 9 : 0)
+                .glassSurface(glass, in: Capsule()) { EmptyView() }
             }
             Spacer()
             Button {
                 window?.toggleFullScreen(nil)
             } label: { Image(systemName: "arrow.up.left.and.arrow.down.right") }
+                .glassButton(glass)
                 .help("Toggle full screen")
             Button("Done") { close() }
+                .glassButton(glass)
                 .keyboardShortcut(.cancelAction)
         }
         .padding(.horizontal, 18)
@@ -285,7 +297,7 @@ struct CookModeView: View {
                                 .font(.title3)
                                 .padding(.horizontal, 8).padding(.vertical, 4)
                         }
-                        .buttonStyle(.bordered)
+                        .glassButton(glass, bordered: true)
                         .help("Detected “\(t.label)”")
                     }
                 }
@@ -296,6 +308,7 @@ struct CookModeView: View {
                 Button { withAnimation { stepIndex -= 1 } } label: {
                     Label("Previous", systemImage: "chevron.left").frame(minWidth: 140)
                 }
+                .glassButton(glass)
                 .disabled(stepIndex == 0)
                 .keyboardShortcut(.leftArrow, modifiers: [])
                 Spacer()
@@ -306,7 +319,7 @@ struct CookModeView: View {
                         .labelStyle(TrailingIconLabelStyle())
                         .frame(minWidth: 140)
                 }
-                .buttonStyle(.borderedProminent)
+                .glassButton(glass, prominent: true)
                 .keyboardShortcut(.rightArrow, modifiers: [])
                 // Space also advances.
                 Button("") { withAnimation { stepIndex += 1 } }
@@ -339,8 +352,8 @@ struct CookModeView: View {
                     Label("Saved. Enjoy your meal!", systemImage: "checkmark.seal.fill")
                         .font(.title3).foregroundStyle(.green)
                     HStack {
-                        Button("Back to Steps") { stepIndex = 0; saved = false }
-                        Button("Close Cook Mode") { close() }.buttonStyle(.borderedProminent)
+                        Button("Back to Steps") { stepIndex = 0; saved = false }.glassButton(glass)
+                        Button("Close Cook Mode") { close() }.glassButton(glass, prominent: true)
                     }
                     .controlSize(.large)
                 } else {
@@ -368,9 +381,9 @@ struct CookModeView: View {
                     }
 
                     HStack {
-                        Button("Skip") { close() }
+                        Button("Skip") { close() }.glassButton(glass)
                         Button("Save") { saveResult() }
-                            .buttonStyle(.borderedProminent)
+                            .glassButton(glass, prominent: true)
                             .keyboardShortcut(.defaultAction)
                     }
                     .controlSize(.large)
@@ -405,6 +418,7 @@ struct CookModeView: View {
                 HStack(spacing: 12) {
                     ForEach(timers.timers) { t in timerChip(t, now: ctx.date) }
                 }
+                .glassContainer(glass)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 10)
             }
@@ -445,7 +459,9 @@ struct CookModeView: View {
         .buttonStyle(.borderless)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(done ? Color.red.opacity(0.12) : Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+        .glassSurface(glass, in: RoundedRectangle(cornerRadius: 12), tint: done ? Color.red.opacity(0.25) : nil) {
+            RoundedRectangle(cornerRadius: 12).fill(done ? Color.red.opacity(0.12) : Color.secondary.opacity(0.08))
+        }
     }
 
     private func close() { dismissWindow() }

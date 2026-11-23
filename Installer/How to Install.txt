@@ -1,0 +1,81 @@
+How to install RecipeCanvas
+===========================
+
+Requires macOS 14 Sonoma or later on a Mac with Apple Silicon (M1 or newer).
+It does not run on Intel Macs.
+
+RecipeCanvas isn't notarized by Apple, so on a new Mac macOS blocks it the
+first time. Pick ONE of the two ways below, and use the Terminal fixes if it
+fails.
+
+
+OPTION A: Installer package (RecipeCanvas-x.x.x.pkg)
+----------------------------------------------------
+1. Double-click RecipeCanvas-x.x.x.pkg.
+2. If macOS says it "can't be opened" or "could not verify" it: click Done,
+   open System Settings > Privacy & Security, scroll to Security and click
+   "Open Anyway" next to RecipeCanvas-x.x.x.pkg. Enter your password.
+3. Follow the installer. RecipeCanvas is installed in Applications and opens
+   itself.
+
+
+OPTION B: Disk image (RecipeCanvas-x.x.x.dmg)
+---------------------------------------------
+1. Open the .dmg and drag RecipeCanvas onto the Applications folder.
+2. Open RecipeCanvas from Applications. If macOS blocks it, click Done
+   (don't move it to the Bin), then System Settings > Privacy & Security >
+   "Open Anyway".
+
+
+IF IT STILL FAILS: Terminal commands
+------------------------------------
+Open Terminal (Applications > Utilities > Terminal), paste a command, press
+Return and type your Mac password when asked (nothing shows as you type).
+
+1. The installer package won't open. Install it from Terminal instead
+   (change the path if the file isn't in Downloads):
+
+       sudo installer -pkg ~/Downloads/RecipeCanvas-*.pkg -target /
+
+2. RecipeCanvas is installed but won't open, or macOS says it is "damaged":
+
+       sudo xattr -cr /Applications/RecipeCanvas.app && open /Applications/RecipeCanvas.app
+
+3. "Open Anyway" doesn't appear, or the .pkg / .dmg itself is blocked:
+
+       xattr -c ~/Downloads/RecipeCanvas-*
+
+   then double-click the file again.
+
+4. RecipeCanvas doesn't ask for any special permissions, so this is rarely
+   needed. If you clicked "Don't Allow" when macOS asked whether it may save
+   a recipe card PDF to a folder such as Desktop or Documents, reset its
+   answers:
+
+       tccutil reset All com.recipecanvas.app
+
+   then quit and reopen RecipeCanvas and click Allow next time.
+
+5. Check the Mac is new enough (the first must say 14 or higher, the second
+   must say arm64):
+
+       sw_vers -productVersion
+       uname -m
+
+
+AFTER INSTALLING
+----------------
+RecipeCanvas opens on your recipe library with two sample recipes. Edit the
+draft (it saves itself), press Command-S to save it as a version with a
+note and rating, and use Compare to see what changed between versions.
+Command-K opens Cook Mode with large steps and timers; Command-P prints or
+saves a recipe card. Settings turns on the Liquid Glass theme on macOS 26.
+
+Your recipes are saved in ~/Library/Application Support/RecipeCanvas
+(Library.store). Copy that folder to the same place on another Mac to move
+your recipes.
+
+To uninstall (this also deletes your recipes, so copy that folder first):
+quit RecipeCanvas, then run
+
+       rm -rf /Applications/RecipeCanvas.app ~/Library/Application\ Support/RecipeCanvas ~/Library/Preferences/com.recipecanvas.app.plist

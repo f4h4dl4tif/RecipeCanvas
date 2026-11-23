@@ -9,7 +9,10 @@ struct RecipeCanvasApp: App {
     static let container: ModelContainer = {
         let dir = URL.applicationSupportDirectory.appending(path: "RecipeCanvas", directoryHint: .isDirectory)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let config = ModelConfiguration(url: dir.appending(path: "Library.store"))
+        var config = ModelConfiguration(url: dir.appending(path: "Library.store"))
+        #if DEBUG
+        if GlassSnapshot.isActive { config = ModelConfiguration(isStoredInMemoryOnly: true) }   // never touch the real library
+        #endif
         do {
             return try ModelContainer(for: Recipe.self, RecipeVersion.self, PrepNote.self, configurations: config)
         } catch {
@@ -39,6 +42,10 @@ struct RecipeCanvasApp: App {
         .modelContainer(Self.container)
         .defaultSize(width: 1200, height: 800)
         .commandsRemoved()
+
+        Settings {
+            SettingsView().tint(Theme.accent)
+        }
     }
 }
 
@@ -47,6 +54,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Needed when launched as a bare executable (swift run); harmless inside the .app bundle.
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+        #if DEBUG
+        if GlassSnapshot.isActive { DispatchQueue.main.async { GlassSnapshot.run() } }
+        #endif
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }

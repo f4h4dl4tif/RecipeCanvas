@@ -202,6 +202,7 @@ struct RecipeRow: View {
 }
 
 struct EmptyDetail: View {
+    @AppStorage(GlassTheme.key) private var glass = false
     let newRecipe: () -> Void
     var body: some View {
         ContentUnavailableView {
@@ -209,7 +210,7 @@ struct EmptyDetail: View {
         } description: {
             Text("Select a recipe, or start a new one and save versions as you experiment.")
         } actions: {
-            Button("New Recipe", action: newRecipe).buttonStyle(.borderedProminent)
+            Button("New Recipe", action: newRecipe).glassButton(glass, prominent: true)
         }
     }
 }
